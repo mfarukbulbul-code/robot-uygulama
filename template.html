@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Adresteki Hafıza</title>
+<meta name="theme-color" content="#1F3A5F">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%8D%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#F4F6FA; --card:#FFFFFF; --ink:#1B2430; --muted:#5A6678; --line:#DCE2EC;
+  --brand:#1F3A5F; --brand-ink:#FFFFFF; --accent:#E07A1F; --ok:#1E7A4C; --warn:#9A5B00; --warnbg:#FFF4DE;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10151D; --card:#19212C; --ink:#EDF1F7; --muted:#A3AEC0; --line:#2B3646;
+    --brand:#7FA6DB; --brand-ink:#0E1620; --accent:#F0A055; --ok:#5CCB92; --warn:#F3C679; --warnbg:#2F2514;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10151D; --card:#19212C; --ink:#EDF1F7; --muted:#A3AEC0; --line:#2B3646;
+  --brand:#7FA6DB; --brand-ink:#0E1620; --accent:#F0A055; --ok:#5CCB92; --warn:#F3C679; --warnbg:#2F2514;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:640px;margin:0 auto;padding:16px 16px 40px}
+header{display:flex;align-items:center;gap:12px;margin:4px 0 16px}
+.logo{width:44px;height:44px;border-radius:12px;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-size:24px}
+h1{font-size:20px;line-height:1.2;margin:0}
+.sub{color:var(--muted);font-size:13px;margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+.safety{background:var(--warnbg);color:var(--warn);border-color:transparent;font-size:14px}
+.label{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 6px}
+.street{font-size:22px;font-weight:700;margin:0 0 4px}
+.status{color:var(--muted);margin:0}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button,select,input{font:inherit}
+.btn{min-height:44px;padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand);font-weight:600}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.person h2{font-size:20px;margin:0}
+.person .meta{color:var(--muted);margin:2px 0 10px;font-size:14px}
+.person p{margin:0 0 10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:2px 10px;font-size:13px}
+.empty{color:var(--muted)}
+.err{color:var(--warn)}
+.ok{color:var(--ok)}
+details{border-top:1px solid var(--line);padding:10px 0}
+details:first-of-type{border-top:0}
+summary{cursor:pointer;font-weight:600;list-style-position:inside}
+details .body{padding:8px 0 0 4px;font-size:15px}
+.search{width:100%;min-height:44px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);margin:6px 0 8px}
+select{width:100%;min-height:44px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.toast{position:fixed;left:12px;right:12px;top:calc(env(safe-area-inset-top,0px) + 10px);max-width:616px;margin:0 auto;background:var(--brand);color:var(--brand-ink);border-radius:14px;padding:12px 14px;box-shadow:0 6px 24px rgba(0,0,0,.25);transform:translateY(-140%);transition:transform .25s ease;z-index:10}
+.toast.show{transform:translateY(0)}
+.toast b{display:block}
+.fine{font-size:12px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="wrap">
+  <header>
+    <div class="logo" aria-hidden="true">📍</div>
+    <div><h1>Adresteki Hafıza</h1><p class="sub">Sokağındaki şahsiyeti tanı</p></div>
+  </header>
+
+  <div class="card safety">⚠️ Sokakta uygulamayı <b>bir yetişkinle birlikte</b> ve yürürken dikkatli kullan. Karşıdan karşıya geçerken telefona bakma.</div>
+
+  <section class="card" aria-labelledby="curLabel">
+    <p class="label" id="curLabel">Şu an bulunduğun sokak</p>
+    <p class="street" id="street">Henüz belirlenmedi</p>
+    <p class="status" id="status">Başlamak için “Konumumu izle”ye dokun.</p>
+    <div class="btns">
+      <button class="btn primary" id="btnWatch">Konumumu izle</button>
+      <button class="btn" id="btnNotif">Bildirimleri aç</button>
+    </div>
+  </section>
+
+  <section class="card person" id="personCard" aria-live="polite" hidden></section>
+
+  <section class="card">
+    <p class="label">Konum olmadan dene</p>
+    <label for="demoSel" class="sub">Bir sokak seç; uygulama o sokaktaymışsın gibi gösterir.</label>
+    <select id="demoSel"></select>
+    <div class="btns"><button class="btn" id="btnDemo">Bu sokağı göster ve bildirimi dene</button></div>
+  </section>
+
+  <section class="card">
+    <p class="label">Tüm sokaklar</p>
+    <input class="search" id="search" type="search" placeholder="Sokak veya kişi ara" aria-label="Sokak veya kişi ara">
+    <div id="list"></div>
+  </section>
+
+  <p class="fine">Konum bilgin cihazında işlenir ve kaydedilmez. Bulunduğun sokağın adını öğrenmek için koordinatın OpenStreetMap (Nominatim) hizmetine gönderilir. Bu uygulama okul projesi kapsamında geliştirilmiş bir prototiptir.</p>
+</div>
+
+<script>
+/*DATA*/
+
+// ---------- yardımcılar ----------
+const $ = id => document.getElementById(id);
+const SUFFIX = /\b(sokagi|sokak|sk|caddesi|cadde|cd|bulvari|bulvar|blv)\b/g;
+function norm(s){
+  return (s||"").toLocaleLowerCase("tr")
+    .replace(/â/g,"a").replace(/î/g,"i").replace(/û/g,"u")
+    .replace(/ğ/g,"g").replace(/ı/g,"i").replace(/ö/g,"o").replace(/ü/g,"u").replace(/ş/g,"s").replace(/ç/g,"c")
+    .replace(/[^a-z0-9 ]/g," ").replace(SUFFIX," ").replace(/\s+/g," ").trim();
+}
+function compact(s){ return norm(s).replace(/ /g,""); }
+function lev(a,b){
+  const m=a.length,n=b.length; if(!m) return n; if(!n) return m;
+  let prev=Array.from({length:n+1},(_,i)=>i);
+  for(let i=1;i<=m;i++){
+    const cur=[i];
+    for(let j=1;j<=n;j++) cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    prev=cur;
+  }
+  return prev[n];
+}
+KAYITLAR.forEach(k=>{ k._key = compact(k.sokak); });
+
+function eslestir(yol){
+  const q = compact(yol); if(!q) return null;
+  let best=null, bestScore=1e9;
+  for(const k of KAYITLAR){
+    const a=k._key;
+    let score;
+    if(a===q) score=0;
+    else if(Math.min(a.length,q.length)>=6 && (a.includes(q)||q.includes(a))) score=1;
+    else{
+      const d=lev(a,q), tol=Math.max(a.length,q.length)>=12?2:1;
+      score = d<=tol ? 2+d : 1e9;
+    }
+    if(score<bestScore){bestScore=score;best=k;}
+  }
+  return bestScore<1e9 ? best : null;
+}
+function metre(a,b){
+  const R=6371000, rad=x=>x*Math.PI/180;
+  const dLat=rad(b.lat-a.lat), dLon=rad(b.lon-a.lon);
+  const h=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+// ---------- arayüz ----------
+let toastTimer;
+function toast(baslik,metin){
+  const t=$("toast"); t.innerHTML="<b>"+esc(baslik)+"</b>"+esc(metin||"");
+  t.classList.add("show"); clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove("show"),6000);
+}
+function setStatus(text,cls){ const s=$("status"); s.textContent=text; s.className="status "+(cls||""); }
+function sokakAdi(k){ return k.sokak; }
+
+function gosterKisi(k){
+  const c=$("personCard"); c.hidden=false;
+  if(!k.ad){
+    c.innerHTML='<p class="label">Bu sokağın şahsiyeti</p><h2>'+esc(k.sokak)+'</h2><p class="empty">Bu sokakta adı geçen kişinin bilgisi henüz eklenmedi.</p>';
+    return;
+  }
+  let h='<p class="label">Bu sokağın şahsiyeti</p><h2>'+esc(k.ad)+'</h2>';
+  h+='<p class="meta">'+esc([k.yasam,k.rol].filter(Boolean).join(" · "))+'</p>';
+  h+='<p>'+esc(k.detay)+'</p>';
+  if(k.eserler&&k.eserler.length) h+='<p class="label">Bilinen eserleri</p><div class="chips">'+k.eserler.map(e=>'<span class="chip">'+esc(e)+'</span>').join("")+'</div>';
+  c.innerHTML=h;
+}
+
+let sonGosterilen=null;
+function sokakBulundu(k,{bildir=true}={}){
+  $("street").textContent=k.sokak;
+  setStatus(k.ad?"Bu sokağın adı "+k.ad+" adlı kişiye ait.":"Bu sokak listemizde var ama bilgisi henüz eklenmedi.","ok");
+  gosterKisi(k);
+  if(bildir && sonGosterilen!==k.sokak){ bildirimGonder(k); }
+  sonGosterilen=k.sokak;
+}
+
+// ---------- bildirim ----------
+let swReg=null;
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  navigator.serviceWorker.register("sw.js").then(r=>{swReg=r;}).catch(()=>{});
+}
+function bildirimDurumu(){
+  const b=$("btnNotif");
+  if(!("Notification" in window)){ b.disabled=true; b.textContent="Bildirim desteklenmiyor"; return; }
+  if(Notification.permission==="granted"){ b.textContent="Bildirimler açık ✓"; b.disabled=true; }
+  else if(Notification.permission==="denied"){ b.textContent="Bildirimler engelli"; b.disabled=true; }
+}
+async function bildirimIzni(){
+  try{ await Notification.requestPermission(); }catch(e){}
+  bildirimDurumu();
+}
+async function bildirimGonder(k){
+  toast("📍 "+k.sokak,k.ad?k.ad+": "+k.kisa:"Bu sokağın bilgisi henüz eklenmedi.");
+  if(!("Notification" in window) || Notification.permission!=="granted") return;
+  const opts={body:k.ad?k.ad+" – "+k.kisa:"Bu sokağın bilgisi henüz eklenmedi.", tag:"adresteki-hafiza", icon:"icon-192.png", badge:"icon-192.png"};
+  try{
+    const reg = swReg || (navigator.serviceWorker && await Promise.race([navigator.serviceWorker.ready,new Promise(r=>setTimeout(()=>r(null),1500))]));
+    if(reg && reg.showNotification){ await reg.showNotification("📍 "+k.sokak,opts); return; }
+  }catch(e){}
+  try{ new Notification("📍 "+k.sokak,opts); }catch(e){}
+}
+
+// ---------- konum ----------
+let watchId=null, sonSorgu=null, sonSorguZamani=0, sorgulaniyor=false;
+async function yolAdiBul(lat,lon){
+  const url="https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=18&addressdetails=1&accept-language=tr&lat="+lat+"&lon="+lon;
+  const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),9000);
+  try{
+    const r=await fetch(url,{signal:ctl.signal,headers:{"Accept":"application/json"}});
+    if(!r.ok) throw new Error("http "+r.status);
+    const j=await r.json(); const a=j.address||{};
+    return a.road||a.pedestrian||a.footway||a.path||a.residential||a.living_street||"";
+  } finally { clearTimeout(to); }
+}
+async function konumGeldi(pos){
+  const p={lat:pos.coords.latitude,lon:pos.coords.longitude};
+  const simdi=Date.now();
+  if(sorgulaniyor) return;
+  if(sonSorgu && metre(sonSorgu,p)<20 && simdi-sonSorguZamani<60000) return;
+  if(simdi-sonSorguZamani<8000) return;
+  sorgulaniyor=true; sonSorgu=p; sonSorguZamani=simdi;
+  setStatus("Sokak adı aranıyor…");
+  try{
+    const yol=await yolAdiBul(p.lat,p.lon);
+    if(!yol){ $("street").textContent="Sokak bulunamadı"; setStatus("Bu noktada bir sokak adı bulunamadı."); return; }
+    const k=eslestir(yol);
+    if(k) sokakBulundu(k);
+    else{ $("street").textContent=yol; setStatus("Bu sokak, projemizin sokak listesinde yok.","err"); $("personCard").hidden=true; sonGosterilen=null; }
+  }catch(e){
+    setStatus("Sokak adı alınamadı. İnternet bağlantını kontrol et. Bu önizlemede otomatik arama çalışmıyorsa aşağıdan sokak seçerek dene.","err");
+  }finally{ sorgulaniyor=false; }
+}
+function konumHatasi(e){
+  const msg = e.code===1 ? "Konum izni verilmedi. Tarayıcı ayarlarından konuma izin ver ya da aşağıdan sokak seçerek dene."
+            : e.code===3 ? "Konum bulunamadı (zaman aşımı). Açık bir yerde tekrar dene."
+            : "Konum alınamadı. Konum servisinin açık olduğundan emin ol.";
+  setStatus(msg,"err"); durdur();
+}
+function baslat(){
+  if(!("geolocation" in navigator)){ setStatus("Bu tarayıcı konumu desteklemiyor. Aşağıdan sokak seçerek dene.","err"); return; }
+  setStatus("Konum izni bekleniyor…");
+  watchId=navigator.geolocation.watchPosition(konumGeldi,konumHatasi,{enableHighAccuracy:true,maximumAge:5000,timeout:20000});
+  $("btnWatch").textContent="İzlemeyi durdur";
+}
+function durdur(){
+  if(watchId!==null){ navigator.geolocation.clearWatch(watchId); watchId=null; }
+  $("btnWatch").textContent="Konumumu izle";
+}
+
+// ---------- liste ----------
+function listeCiz(f){
+  const q=norm(f||"").replace(/ /g,"");
+  const html=KAYITLAR.filter(k=>!q||compact(k.sokak+" "+(k.ad||"")).includes(q)).map(k=>{
+    const govde=k.ad?('<p><b>'+esc(k.ad)+'</b>'+(k.yasam?' ('+esc(k.yasam)+')':'')+'<br>'+esc(k.detay)+'</p>'):'<p class="empty">Bilgi henüz eklenmedi.</p>';
+    return '<details><summary>'+esc(k.sokak)+(k.ad?' — '+esc(k.ad):'')+'</summary><div class="body">'+govde+'</div></details>';
+  }).join("");
+  $("list").innerHTML=html||'<p class="empty">Sonuç bulunamadı.</p>';
+}
+
+// ---------- başlat ----------
+$("demoSel").innerHTML=KAYITLAR.map((k,i)=>'<option value="'+i+'">'+esc(k.sokak)+'</option>').join("");
+$("btnWatch").addEventListener("click",()=>{ watchId===null?baslat():(durdur(),setStatus("İzleme durduruldu.")); });
+$("btnNotif").addEventListener("click",bildirimIzni);
+$("btnDemo").addEventListener("click",()=>{ sonGosterilen=null; sokakBulundu(KAYITLAR[+$("demoSel").value]); });
+$("search").addEventListener("input",e=>listeCiz(e.target.value));
+listeCiz(""); bildirimDurumu();
+</script>
+</body>
+</html>
